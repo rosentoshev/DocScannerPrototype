@@ -37,7 +37,7 @@ const App: () => React$Node = () => {
           },
         })}
         tabBarOptions={{
-          activeTintColor: 'tomate',
+          activeTintColor: 'tomato',
           inactiveTintColor: 'gray',
         }}>
         <Tab.Screen name="Home" component={HomeScreen} />

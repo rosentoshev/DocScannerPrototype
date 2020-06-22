@@ -1,38 +1,89 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, StyleSheet, Text, Button} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Button,
+  Image,
+  Platform,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
+import Permissions from 'react-native-permissions';
 import PDFScanner from '@woonivers/react-native-document-scanner';
+import {Icon} from 'react-native-elements';
 
 function DetailsScreen({navigation}) {
-  const pdfScannerElement = useRef(null);
+  const scanner = useRef(null);
   const [data, setData] = useState({});
   const [allowed, setAllowed] = useState(false);
 
+  useEffect(() => {
+    async function requestCamera() {
+      const result = await Permissions.request(
+        Platform.OS === 'android'
+          ? 'android.permission.CAMERA'
+          : 'ios.permission.CAMERA',
+      );
+      if (result === 'granted') {
+        setAllowed(true);
+      }
+    }
+    requestCamera();
+  }, []);
+
+  function handleOnPressRetry() {
+    setData({});
+  }
+
+  function handleOnPress() {
+    scanner.current.capture();
+  }
+
+  if (!allowed) {
+    console.log('You must accept camera permission');
+    return (
+      <View style={styles.permissions}>
+        <Text>You must accept camera permission</Text>
+      </View>
+    );
+  }
+  if (data.croppedImage) {
+    console.log('data', data);
+    return (
+      <React.Fragment>
+        <Image source={{uri: data.croppedImage}} style={styles.preview} />
+        <TouchableOpacity onPress={handleOnPressRetry} style={styles.button}>
+          <Text style={styles.buttonText}>Retry</Text>
+        </TouchableOpacity>
+      </React.Fragment>
+    );
+  }
+
   return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <View>
-        <PDFScanner
-          style={StyleSheet.scanner}
-          onPictureTaken={setData}
-          overlayColor="rgba(255, 130, 0, 0.7)"
-          enableTorch={false}
-          quality={0.5}
-          detectionCountBeforeCapture={5000000}
-          detectionRefreshRateInMs={50}
+    <>
+      <Text>Receipt Scanner</Text>
+      <PDFScanner
+        ref={scanner}
+        style={styles.scanner}
+        onPictureTaken={setData}
+        overlayColor="rgba(255, 130, 0, 0.7)"
+        enableTorch={false}
+        quality={0.5}
+        manualOnly={true}
+        detectionCountBeforeCapture={5000000}
+        detectionRefreshRateInMs={50}
+      />
+      <View style={styles.cameraButton}>
+        <Icon
+          reverse
+          name="ios-camera"
+          type="ionicon"
+          color="#00BED2"
+          onPress={handleOnPress}
         />
       </View>
-      <Text>Details Screen</Text>
-      <Button
-        title="Go to Details... again"
-        onPress={() => navigation.push('Details')}
-      />
-      <Button title="Home" onPress={() => navigation.navigate('Home')} />
-      <Button title="Go back" onPress={() => navigation.goBack()} />
-      <Button
-        title="Go back to first screen in stack"
-        onPress={() => navigation.popToTop()}
-      />
-    </View>
+    </>
   );
 }
 
@@ -40,6 +91,29 @@ const styles = StyleSheet.create({
   scanner: {
     flex: 1,
     aspectRatio: undefined,
+  },
+  button: {
+    alignSelf: 'center',
+    position: 'absolute',
+    bottom: 32,
+  },
+  buttonText: {
+    backgroundColor: 'rgba(245, 252, 255, 0.7)',
+    fontSize: 32,
+  },
+  preview: {
+    flex: 1,
+    width: '100%',
+    resizeMode: 'cover',
+  },
+  permissions: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cameraButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
