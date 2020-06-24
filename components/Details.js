@@ -12,6 +12,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import Permissions from 'react-native-permissions';
 import PDFScanner from '@woonivers/react-native-document-scanner';
 import {Icon} from 'react-native-elements';
+import ImageEditor from './ImageEditor';
 
 function DetailsScreen({navigation}) {
   const scanner = useRef(null);
@@ -48,14 +49,18 @@ function DetailsScreen({navigation}) {
       </View>
     );
   }
-  if (data.croppedImage) {
+  if (data.initialImage) {
     console.log('data', data);
     return (
       <React.Fragment>
-        <Image source={{uri: data.croppedImage}} style={styles.preview} />
+        <ImageEditor
+          image={data.initialImage}
+          handleOnPressRetry={handleOnPressRetry}
+        />
+        {/* <Image source={{uri: data.croppedImage}} style={styles.preview} />
         <TouchableOpacity onPress={handleOnPressRetry} style={styles.button}>
           <Text style={styles.buttonText}>Retry</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </React.Fragment>
     );
   }

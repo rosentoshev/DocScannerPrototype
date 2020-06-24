@@ -29,8 +29,8 @@ const App: () => React$Node = () => {
               iconName = focused
                 ? 'ios-information-circle'
                 : 'ios-information-circle-outline';
-            } else if (route.name === 'Settings') {
-              iconName = focused ? 'ios-list-box' : 'ios-list';
+            } else if (route.name === 'Document Scanner') {
+              iconName = focused ? 'ios-camera' : 'ios-reverse-camera';
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
@@ -41,7 +41,7 @@ const App: () => React$Node = () => {
           inactiveTintColor: 'gray',
         }}>
         <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Details" component={DetailsScreen} />
+        <Tab.Screen name="Document Scanner" component={DetailsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );
